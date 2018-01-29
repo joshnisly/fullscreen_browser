@@ -12,7 +12,7 @@ from PyQt4 import QtNetwork
 from PyQt4 import QtWebKit
 
 
-ROOT_URL = 'https://nislybro.apphosting.zone/frontend/'
+ROOT_URL = 'https://www.google.com/'
 
 settings_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.ini')
 
@@ -20,8 +20,12 @@ config = ConfigParser.ConfigParser()
 config.read(settings_path)
 if config.has_option('Settings', 'Url'):
     ROOT_URL = config.get('Settings', 'Url')
-USERNAME = config.get('Auth', 'Username')
-PASSWORD = config.get('Auth', 'Password')
+
+USERNAME = ''
+PASSWORD = ''
+if config.has_option('Auth', 'Username'):
+    USERNAME = config.get('Auth', 'Username')
+    PASSWORD = config.get('Auth', 'Password')
 
 
 class _WebPage(QtWebKit.QWebPage):

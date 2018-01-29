@@ -6,10 +6,12 @@ import ConfigParser
 import json
 import os
 
-from PyQt4 import QtCore
-from PyQt4 import QtGui
-from PyQt4 import QtNetwork
-from PyQt4 import QtWebKit
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+from PyQt5 import QtNetwork
+from PyQt5 import QtWebKit
+from PyQt5 import QtWebKitWidgets
 
 
 ROOT_URL = 'https://www.google.com/'
@@ -28,7 +30,7 @@ if config.has_option('Auth', 'Username'):
     PASSWORD = config.get('Auth', 'Password')
 
 
-class _WebPage(QtWebKit.QWebPage):
+class _WebPage(QtWebKitWidgets.QWebPage):
     """
     QWebPage that prints Javascript errors to stderr.
     """
@@ -67,33 +69,33 @@ class _WebPage(QtWebKit.QWebPage):
         return qresult.toBool()
 
 
-class MainFrame(QtGui.QMainWindow):
+class MainFrame(QtWidgets.QMainWindow):
     def __init__(self, parent):
-        QtGui.QMainWindow.__init__(self, parent)
+        QtWidgets.QMainWindow.__init__(self, parent)
 
         self.setWindowTitle(self.tr('Browser'))
 
         # Create main window and setup events
-        self.view = QtWebKit.QWebView()
+        self.view = QtWebKitWidgets.QWebView()
 
         self.setCentralWidget(self.view)
 
         self.view.setPage(_WebPage())
 
         # Disable and hide various actions. This needs to happen after we call setPage.
-        for action in (QtWebKit.QWebPage.DownloadLinkToDisk,
-                        QtWebKit.QWebPage.OpenLinkInNewWindow,
-                        QtWebKit.QWebPage.OpenFrameInNewWindow,
-                        QtWebKit.QWebPage.DownloadImageToDisk,
-                        QtWebKit.QWebPage.OpenImageInNewWindow):
+        for action in (QtWebKitWidgets.QWebPage.DownloadLinkToDisk,
+                        QtWebKitWidgets.QWebPage.OpenLinkInNewWindow,
+                        QtWebKitWidgets.QWebPage.OpenFrameInNewWindow,
+                        QtWebKitWidgets.QWebPage.DownloadImageToDisk,
+                        QtWebKitWidgets.QWebPage.OpenImageInNewWindow):
             self.view.pageAction(action).setEnabled(False)
             self.view.pageAction(action).setVisible(False)
 
         self.manager = QtNetwork.QNetworkAccessManager()
-        self.connect(self.manager, QtCore.SIGNAL('authenticationRequired(QNetworkReply*, QAuthenticator*)'),
-                     self._on_auth)
-        self.connect(self.manager, QtCore.SIGNAL('sslErrors(QNetworkReply *, QList<QSslError>)'),
-                     self._on_ssl_errors)
+        #self.connect(self.manager, QtCore.SIGNAL('authenticationRequired(QNetworkReply*, QAuthenticator*)'),
+        #             self._on_auth)
+        #self.connect(self.manager, QtCore.SIGNAL('sslErrors(QNetworkReply *, QList<QSslError>)'),
+        #             self._on_ssl_errors)
 
         self.view.page().setNetworkAccessManager(self.manager)
 
@@ -109,7 +111,7 @@ class MainFrame(QtGui.QMainWindow):
 
 
 def main():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
 
     # Use a custom palette to make the highlighted text visible when searching.
     palette = QtGui.QPalette()

@@ -3,35 +3,31 @@
 import sys
 
 import ConfigParser
-import json
 import os
 
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
-from PyQt5 import QtNetwork
-from PyQt5 import QtWebKit
-from PyQt5 import QtWebKitWidgets
 
 import tabbed_browser
 
-ROOT_URL = 'https://www.google.com/'
-
-settings_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.ini')
-
-config = ConfigParser.ConfigParser()
-config.read(settings_path)
-if config.has_option('Settings', 'Url'):
-    ROOT_URL = config.get('Settings', 'Url')
-
-USERNAME = ''
-PASSWORD = ''
-if config.has_option('Auth', 'Username'):
-    USERNAME = config.get('Auth', 'Username')
-    PASSWORD = config.get('Auth', 'Password')
-
 
 def main():
+    root_url = 'https://www.google.com/'
+
+    settings_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.ini')
+
+    config = ConfigParser.ConfigParser()
+    config.read(settings_path)
+    if config.has_option('Settings', 'Url'):
+        root_url = config.get('Settings', 'Url')
+
+    username = ''
+    password = ''
+    if config.has_option('Auth', 'Username'):
+        username = config.get('Auth', 'Username')
+        password = config.get('Auth', 'Password')
+
     app = QtWidgets.QApplication(sys.argv)
 
     # Use a custom palette to make the highlighted text visible when searching.
@@ -43,7 +39,7 @@ def main():
     app.setPalette(palette)
 
     state_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'state.json')
-    main_frame = tabbed_browser.MainFrame(state_path, ROOT_URL, USERNAME, PASSWORD)
+    main_frame = tabbed_browser.MainFrame(state_path, root_url, username, password)
     if '--restored' in sys.argv:
         main_frame.show()
     else:

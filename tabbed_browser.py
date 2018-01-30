@@ -36,7 +36,8 @@ class MainFrame(QtWidgets.QMainWindow):
         print('add_tab', url)
         url = url or ''
         url = QtCore.QUrl(url)
-        self.tabs.setCurrentIndex(self.tabs.addTab(web_tab.Tab(url, self), ''))
+        new_tab = web_tab.Tab(url, self, self._username, self._password)
+        self.tabs.setCurrentIndex(self.tabs.addTab(new_tab, ''))
         return self.tabs.currentWidget()
 
     def closeEvent(self, event):
@@ -67,10 +68,3 @@ class MainFrame(QtWidgets.QMainWindow):
             return json.loads(open(self._state_path).read())
         except Exception:
             return {}
-
-    def _on_ssl_errors(self, reply, errors):
-        reply.ignoreSslErrors()
-
-    def _on_auth(self, reply, authenticator):
-        authenticator.setUser(self._username)
-        authenticator.setPassword(self._password)

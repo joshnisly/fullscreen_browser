@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import json
+from PyQt5 import QtNetwork
 from PyQt5 import QtWebKit
 from PyQt5 import QtWebKitWidgets
 import sys
@@ -46,9 +47,11 @@ class _WebPage(QtWebKitWidgets.QWebPage):
 
 
 class Tab(QtWebKitWidgets.QWebView):
-    def __init__(self, url, container):
+    def __init__(self, url, container, username, password):
         QtWebKitWidgets.QWebView.__init__(self)
         self._container = container
+        self._username = username
+        self._password = password
         self.setPage(_WebPage())
         self.page().networkAccessManager().setCookieJar(container.get_cookies())
         self.page().setForwardUnsupportedContent(True)
@@ -57,6 +60,9 @@ class Tab(QtWebKitWidgets.QWebView):
         self.settings().setAttribute(QtWebKit.QWebSettings.JavascriptCanOpenWindows, True)
         self.settings().setAttribute(QtWebKit.QWebSettings.JavascriptCanCloseWindows, True)
 
+        self.page().networkAccessManager().authenticationRequired.connect(self._on_auth)
+        self.page().networkAccessManager().sslErrors.connect(self._on_auth)
+
         self.load(url)
 
     def createWindow(self, windowType):
@@ -64,3 +70,10 @@ class Tab(QtWebKitWidgets.QWebView):
         self.page().settings().setAttribute(QtWebKit.QWebSettings.JavascriptCanOpenWindows, True)
         self.page().settings().setAttribute(QtWebKit.QWebSettings.JavascriptCanCloseWindows, True)
         return self._container.add_tab()
+
+    def _on_ssl_errors(self, reply, errors):
+        reply.ignoreSslErrors()
+
+    def _on_auth(self, reply, authenticator):
+        authenticator.setUser(self._username)
+        authenticator.setPassword(self._password)

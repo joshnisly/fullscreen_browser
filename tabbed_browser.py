@@ -66,7 +66,6 @@ class MainFrame(QtWidgets.QMainWindow):
         try:
             return json.loads(open(self._state_path).read())
         except Exception:
-            import traceback; traceback.print_exc()
             return {}
 
     def _on_ssl_errors(self, reply, errors):

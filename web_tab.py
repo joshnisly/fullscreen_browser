@@ -46,6 +46,23 @@ class _WebPage(QtWebKitWidgets.QWebPage):
         return qresult.toBool()
 
 
+class _LoggingManager(QtNetwork.QNetworkAccessManager):
+    def __init__(self):
+        QtNetwork.QNetworkAccessManager.__init__(self)
+        # add event listener on "load finished" event
+        self.finished.connect(self._finished)
+
+    def _finished(self, reply):
+        """Update table with headers, status code and url.
+        """
+        headers = reply.rawHeaderPairs()
+        headers = {str(k):str(v) for k,v in headers}
+        print headers
+        print reply.url().toString()
+        status = reply.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute)
+        print status
+
+
 class Tab(QtWebKitWidgets.QWebView):
     def __init__(self, url, container, username, password):
         QtWebKitWidgets.QWebView.__init__(self)
@@ -53,6 +70,8 @@ class Tab(QtWebKitWidgets.QWebView):
         self._username = username
         self._password = password
         self.setPage(_WebPage())
+        if False: # Enable to see request logging.
+            self.page().setNetworkAccessManager(_LoggingManager())
         self.page().networkAccessManager().setCookieJar(container.get_cookies())
         self.page().setForwardUnsupportedContent(True)
 

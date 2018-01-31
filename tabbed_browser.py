@@ -48,7 +48,8 @@ class MainFrame(QtWidgets.QMainWindow):
     def _load_cookies(self):
         cookies = []
         for cookie in self._get_state_value('cookies', []):
-            cookies.append(QtNetwork.QNetworkCookie.parseCookies(cookie)[0])
+            cookie_bytes = QtCore.QByteArray(cookie.encode('utf-8'))
+            cookies.append(QtNetwork.QNetworkCookie.parseCookies(cookie_bytes)[0])
 
         self._cookies.setAllCookies(cookies)
 

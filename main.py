@@ -52,4 +52,9 @@ def main():
 
 
 if __name__ == '__main__':
+    # Make the monitor stay on.
+    os.system('xset s off')
+    os.system('xset -dpms')
+    os.system('xset s noblank')
+
     main()

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Fullscreen browser
+Comment=Put in ~/.config/autostart to automatically start the browser
+Exec=/usr/bin/python /home/pi/source/fullscreen_browser/main.py

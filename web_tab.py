@@ -82,6 +82,7 @@ class Tab(QtWebKitWidgets.QWebView):
 
         self.page().networkAccessManager().authenticationRequired.connect(self._on_auth)
         self.page().networkAccessManager().sslErrors.connect(self._on_auth)
+        self.page().windowCloseRequested.connect(self._on_close)
 
         self.loadFinished.connect(self._loadFinished)
 
@@ -92,6 +93,9 @@ class Tab(QtWebKitWidgets.QWebView):
         self.page().settings().setAttribute(QtWebKit.QWebSettings.JavascriptCanOpenWindows, True)
         self.page().settings().setAttribute(QtWebKit.QWebSettings.JavascriptCanCloseWindows, True)
         return self._container.add_tab()
+
+    def _on_close(self):
+        self._container.tabs.removeTab(self._container.tabs.currentIndex())
 
     def _loadFinished(self, ok):
         frame = self.page().currentFrame()

@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-import sys
-
 import ConfigParser
+import json
 import os
+import sys
 
 from PyQt5 import QtCore
 from PyQt5 import QtGui
@@ -39,7 +39,11 @@ def main():
     app.setPalette(palette)
 
     state_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'state.json')
-    main_frame = tabbed_browser.MainFrame(state_path, root_url, username, password)
+    form_values = {}
+    form_values_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'form_values.json')
+    if os.path.exists(form_values_path):
+        form_values = json.load(open(form_values_path))
+    main_frame = tabbed_browser.MainFrame(state_path, root_url, username, password, form_values)
     if '--restored' in sys.argv:
         main_frame.show()
     else:

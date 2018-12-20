@@ -64,11 +64,12 @@ class _LoggingManager(QtNetwork.QNetworkAccessManager):
 
 
 class Tab(QtWebKitWidgets.QWebView):
-    def __init__(self, url, container, username, password):
+    def __init__(self, url, container, username, password, form_values):
         QtWebKitWidgets.QWebView.__init__(self)
         self._container = container
         self._username = username
         self._password = password
+        self._form_values = form_values
         self.setPage(_WebPage())
         if False: # Enable to see request logging.
             self.page().setNetworkAccessManager(_LoggingManager())
@@ -82,6 +83,8 @@ class Tab(QtWebKitWidgets.QWebView):
         self.page().networkAccessManager().authenticationRequired.connect(self._on_auth)
         self.page().networkAccessManager().sslErrors.connect(self._on_auth)
 
+        self.loadFinished.connect(self._loadFinished)
+
         self.load(url)
 
     def createWindow(self, windowType):
@@ -89,6 +92,18 @@ class Tab(QtWebKitWidgets.QWebView):
         self.page().settings().setAttribute(QtWebKit.QWebSettings.JavascriptCanOpenWindows, True)
         self.page().settings().setAttribute(QtWebKit.QWebSettings.JavascriptCanCloseWindows, True)
         return self._container.add_tab()
+
+    def _loadFinished(self, ok):
+        frame = self.page().currentFrame()
+        for name, value in self._form_values['inputs'].items():
+            elems = frame.findAllElements('input[name="%s"]' % name)
+            for elem in elems:
+                elem.setAttribute('value', value)
+
+        for button in self._form_values['buttons']:
+            elems = frame.findAllElements(button)
+            for elem in elems:
+                elem.evaluateJavaScript("this.click()")
 
     def _on_ssl_errors(self, reply, errors):
         reply.ignoreSslErrors()

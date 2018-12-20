@@ -8,12 +8,13 @@ import web_tab
 
 
 class MainFrame(QtWidgets.QMainWindow):
-    def __init__(self, state_path, initial_url, username, password):
+    def __init__(self, state_path, initial_url, username, password, form_values):
         QtWidgets.QMainWindow.__init__(self, None)
         self._state_path = state_path
         self._initial_url = initial_url
         self._username = username
         self._password = password
+        self._form_values = form_values
 
         self.tabs = QtWidgets.QTabWidget(self,
                                          tabsClosable=True,
@@ -36,7 +37,7 @@ class MainFrame(QtWidgets.QMainWindow):
         print('add_tab', url)
         url = url or ''
         url = QtCore.QUrl(url)
-        new_tab = web_tab.Tab(url, self, self._username, self._password)
+        new_tab = web_tab.Tab(url, self, self._username, self._password, self._form_values)
         self.tabs.setCurrentIndex(self.tabs.addTab(new_tab, ''))
         return self.tabs.currentWidget()
 

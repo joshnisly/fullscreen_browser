@@ -41,6 +41,7 @@ def main():
         main_frame.setFocus()
         main_frame.activateWindow()
         main_frame.raise_()
+    main_frame.view.setFocus()
     sys.exit(app.exec_())
 
 

@@ -1,6 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
-import ConfigParser
 import json
 import os
 import sys
@@ -9,24 +8,14 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
+import config
 import tabbed_browser
 
 
 def main():
-    root_url = 'https://www.google.com/'
+    root_url = config.Config().get_home_url() or 'https://www.google.com/'
 
-    settings_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.ini')
-
-    config = ConfigParser.ConfigParser()
-    config.read(settings_path)
-    if config.has_option('Settings', 'Url'):
-        root_url = config.get('Settings', 'Url')
-
-    username = ''
-    password = ''
-    if config.has_option('Auth', 'Username'):
-        username = config.get('Auth', 'Username')
-        password = config.get('Auth', 'Password')
+    username, password = config.Config().get_auth()
 
     app = QtWidgets.QApplication(sys.argv)
 
@@ -38,9 +27,9 @@ def main():
                         palette.color(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText))
     app.setPalette(palette)
 
-    state_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'state.json')
+    state_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../state.json')
     form_values = {}
-    form_values_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'form_values.json')
+    form_values_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../form_values.json')
     if os.path.exists(form_values_path):
         form_values = json.load(open(form_values_path))
     main_frame = tabbed_browser.MainFrame(state_path, root_url, username, password, form_values)
